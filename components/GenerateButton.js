@@ -2,25 +2,39 @@
 'use client'
 import { CogIcon } from "lucide-react";
 import {postData} from "../utils/actions";
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { useEditor } from "@tldraw/tldraw";
 import { getSvgAsImage } from "@/lib/getSvgAsImage";
 import { blobToBase64 } from "@/lib/blobToBase64";
+import messageToHTML from "@/lib/messageToHTML";
 
-export default function GenerateButton() {
-
-  const queryClient = useQueryClient(); 
+export default function GenerateButton({setHtml}) {
+ 
+  
   const editor = useEditor();
 
  const {mutate,isPending,data} = useMutation({
 
-  mutationFn : async (request) => await postData(request),
-
+  mutationFn : async (request) => {
+    const {content} =  await postData(request);
+    
+    if(!content){
+      throw new Error('No content found')
+    }
+   const html =  messageToHTML(content);
+    setHtml(html);
+    toast.success('success')
+  },
+ 
  })
 
 
+
+
+
   const handleGenerate = async () => {
+   
   
     const svg = await editor.getSvg(Array.from(editor.currentPageShapeIds));
 
@@ -37,7 +51,7 @@ export default function GenerateButton() {
     const base64Image = await blobToBase64(png);
     
     try {
-      mutate(base64Image)
+      mutate({ image: base64Image })
     }catch(error){
       toast.error(error.message)
     }

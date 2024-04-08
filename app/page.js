@@ -1,14 +1,26 @@
-'use client'
+"use client";
 import { Tldraw } from "@tldraw/tldraw";
-import GenerateButton from '../components/GenerateButton';
-import dynamic from 'next/dynamic';
-
+import GenerateButton from "../components/GenerateButton";
+import PreviewModal from "@/components/PreviewModal";
+import { useState } from "react";
 
 export default function Home() {
-  return <main className='h-screen w-screen'>
-    <Tldraw persistenceKey="snapsite" >
-      <GenerateButton/>
-    </Tldraw>
-  </main>
+  const [html,setHtml] = useState('');
+
+  const closeModal = () => {
+    setHtml('')
+  }
+
+
+  return (
+    <> 
+      {html && <PreviewModal html={html} closeModal={closeModal}/>}
+    {/* <PreviewModal /> */}
+      <main className="h-screen w-screen">
+        <Tldraw persistenceKey="snapsite">
+          <GenerateButton  setHtml={setHtml}/>
+        </Tldraw>
+      </main>
+    </>
+  );
 }
-  

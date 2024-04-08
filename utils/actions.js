@@ -8,7 +8,7 @@ const systemPrompt =
 
 export const postData = async (request) => {
 
-  const { image } = await request.json();
+  const image  = request.image;
   if (!image) {
     return NextResponse.json({ error: "No image provided" });
   }
@@ -22,7 +22,8 @@ export const postData = async (request) => {
         { role: "user", content: [{ type: "image_url", image_url: image }] },
       ],
     });
-    return NextResponse.json(completion);
+   
+    return completion.choices[0].message;
   } catch (error) {
     return NextResponse.json("Internal Server Error", { status: 500 });
   }
